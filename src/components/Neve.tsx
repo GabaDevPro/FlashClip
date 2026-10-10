@@ -41,7 +41,7 @@ export function Neve({ ativa = true }: { ativa?: boolean }) {
     };
 
     const redimensionar = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       largura = canvas.clientWidth;
       altura = canvas.clientHeight;
       canvas.width = largura * dpr;

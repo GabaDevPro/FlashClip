@@ -38,14 +38,15 @@ export function Arvore() {
     const luzes = Array.from({ length: 44 }, (_, i) => ({
       ...pontoNaArvore(rnd),
       cor: CORES_LUZES[i % CORES_LUZES.length],
-      atraso: rnd() * 2.4,
+      fase: i % 3,
     }));
 
     return { bolas, luzes };
   }, []);
 
   return (
-    <svg className="arvore" viewBox="0 0 400 560" aria-hidden="true">
+    <div className="arvore" aria-hidden="true">
+    <svg viewBox="0 0 400 560">
       <defs>
         <linearGradient id="arv-folha" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="#1f8f4e" />
@@ -124,18 +125,29 @@ export function Arvore() {
         <text x="178" y="435" fontSize="12" fill="#127a43">{"( )"}</text>
       </g>
 
-      {enfeites.luzes.map((l, i) => (
-        <circle
-          key={i}
-          cx={l.x}
-          cy={l.y}
-          r="3.4"
-          fill={l.cor}
-          className="luz-arvore"
-          style={{ animationDelay: `${l.atraso}s`, color: l.cor }}
-        />
-      ))}
+    </svg>
 
+    {/* luzes e estrela numa camada à parte: só ela repinta quando pisca */}
+    <svg className="arvore-luzes" viewBox="0 0 400 560">
+      <defs>
+        <radialGradient id="arv-halo">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.8" />
+          <stop offset="0.35" stopColor="#fff" stopOpacity="0.25" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {[0, 1, 2].map((fase) => (
+        <g key={fase} className={`luzes-fase luzes-fase-${fase}`}>
+          {enfeites.luzes
+            .filter((l) => l.fase === fase)
+            .map((l, i) => (
+              <g key={i}>
+                <circle cx={l.x} cy={l.y} r="9" fill="url(#arv-halo)" opacity="0.55" />
+                <circle cx={l.x} cy={l.y} r="3.4" fill={l.cor} />
+              </g>
+            ))}
+        </g>
+      ))}
       {/* estrela-raio */}
       <g className="estrela-topo">
         <circle cx="200" cy="44" r="54" fill="url(#arv-brilho-estrela)" />
@@ -148,5 +160,6 @@ export function Arvore() {
         <path d="M206 22 L190 50 L201 50 L194 70 L212 40 L201 40 Z" fill="#c8202f" />
       </g>
     </svg>
+    </div>
   );
 }

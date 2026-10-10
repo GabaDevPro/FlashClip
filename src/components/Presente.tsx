@@ -42,10 +42,9 @@ export function Presente({ curso, indice, inscrito, onAbrir }: Props) {
       whileTap={{ scale: 0.94 }}
       aria-label={`${curso.nome}${esgotado ? " — vagas esgotadas" : ""}${inscrito ? " — você está inscrito" : ""}. Abrir detalhes e inscrição.`}
     >
-      <motion.span
+      <span
         className="presente-flutua"
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3 + (indice % 4) * 0.4, repeat: Infinity, ease: "easeInOut", delay: indice * 0.23 }}
+        style={{ animationDuration: `${3 + (indice % 4) * 0.4}s`, animationDelay: `${-indice * 0.23}s` }}
       >
         <motion.span className="presente-brilho" variants={brilho} aria-hidden="true" />
 
@@ -110,7 +109,7 @@ export function Presente({ curso, indice, inscrito, onAbrir }: Props) {
             <circle cx="60" cy="27" r="6" fill={estilo.fita} stroke="#000" strokeOpacity="0.15" />
           </motion.g>
         </svg>
-      </motion.span>
+      </span>
 
       <span className="presente-etiqueta">
         {curso.nome}

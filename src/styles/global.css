@@ -147,13 +147,11 @@ a {
   justify-content: space-between;
   gap: 16px;
   background: linear-gradient(180deg, rgba(3, 5, 8, 0.65), rgba(3, 5, 8, 0));
-  transition: background 0.35s ease, backdrop-filter 0.35s ease;
+  transition: background 0.35s ease;
 }
 
 .navbar-rolou {
-  background: rgba(10, 10, 13, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(10, 10, 13, 0.94);
 }
 
 .navbar::after {
@@ -423,34 +421,90 @@ a {
     linear-gradient(180deg, #02040b 0%, #071027 45%, #172a4d 75%, #2b4068 100%);
 }
 
-/* Descida leve da cena: a cabana fica abaixo do texto do hero. */
+/* Cena externa: camadas empilhadas, todas com o mesmo viewBox 1600×900
+   em "xMidYMax slice". --s é o tamanho em px de 1 unidade do viewBox, usado
+   para alinhar elementos HTML (porta, fumaça) ao desenho. */
 .cena-externa {
   position: absolute;
-  top: 7vh;
-  left: 0;
+  inset: 0;
+  container-type: size;
+  --s: max(calc(100cqw / 1600), calc(100cqh / 900));
+}
+
+.cena-externa .defs {
+  position: absolute;
+}
+
+.camada {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* origem do zoom: o centro da porta (800, 698) */
+  transform-origin: 50% calc(100% - 202 * var(--s));
+}
+
+/* camadas que só crescem um pouco: a GPU compõe sem redesenhar */
+.camada-ceu,
+.camada-montanhas,
+.camada-distante,
+.camada-media,
+.camada-frente-esq,
+.camada-frente-dir,
+.camada-chao {
+  will-change: transform;
+}
+
+.camada-frente-esq {
+  transform-origin: 0% 100%;
+}
+
+.camada-frente-dir {
+  transform-origin: 100% 100%;
+}
+
+.camada-cabana > svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.estrela-pisca {
+.estrelas-pisca {
   animation: piscar 3.2s ease-in-out infinite;
+}
+
+.estrelas-fase-2 {
+  animation-delay: -1.1s;
+}
+
+.estrelas-fase-3 {
+  animation-delay: -2.2s;
 }
 
 @keyframes piscar {
   50% {
-    opacity: 0.15;
+    opacity: 0.25;
   }
 }
 
 .aurora {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 14%;
+  height: 26%;
+  background:
+    radial-gradient(ellipse 30% 50% at 22% 55%, rgba(47, 214, 123, 0.32), transparent 70%),
+    radial-gradient(ellipse 28% 45% at 50% 40%, rgba(31, 163, 160, 0.22), transparent 70%),
+    radial-gradient(ellipse 26% 50% at 82% 55%, rgba(255, 59, 78, 0.18), transparent 70%);
+  will-change: transform, opacity;
   animation: aurora 12s ease-in-out infinite alternate;
-  transform-box: fill-box;
-  transform-origin: center;
 }
 
 @keyframes aurora {
   from {
-    opacity: 0.55;
+    opacity: 0.6;
     transform: translateX(-3%) scaleY(0.9);
   }
   to {
@@ -459,23 +513,34 @@ a {
   }
 }
 
-.fumaca circle {
-  fill: #c9d3e3;
+/* fumaça: bolhas suaves em HTML, animadas só com transform/opacity */
+.fumaca {
+  position: absolute;
+  left: calc(50% + 67 * var(--s));
+  top: calc(100% - 334 * var(--s));
+}
+
+.fumaca span {
+  position: absolute;
+  left: calc(-12 * var(--s));
+  top: calc(-12 * var(--s));
+  width: calc(24 * var(--s));
+  height: calc(24 * var(--s));
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 223, 238, 0.55), rgba(214, 223, 238, 0) 70%);
   opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
   animation: fumaca 5.5s ease-out infinite;
 }
 
-.fumaca circle:nth-child(2) {
+.fumaca span:nth-child(2) {
   animation-delay: 1.4s;
 }
 
-.fumaca circle:nth-child(3) {
+.fumaca span:nth-child(3) {
   animation-delay: 2.8s;
 }
 
-.fumaca circle:nth-child(4) {
+.fumaca span:nth-child(4) {
   animation-delay: 4.1s;
 }
 
@@ -485,32 +550,93 @@ a {
     transform: translate(0, 0) scale(0.5);
   }
   15% {
-    opacity: 0.3;
+    opacity: 0.8;
   }
   100% {
     opacity: 0;
-    transform: translate(34px, -110px) scale(2.4);
+    transform: translate(calc(34 * var(--s)), calc(-110 * var(--s))) scale(2.6);
   }
 }
 
-.luzinha {
+.luzinhas {
   animation: luzinha 1.6s ease-in-out infinite;
+}
+
+.luzinhas-1 {
+  animation-delay: -0.8s;
 }
 
 @keyframes luzinha {
   50% {
-    opacity: 0.25;
+    opacity: 0.3;
   }
 }
 
-.lanterna {
-  animation: lanterna 2.4s ease-in-out infinite;
+/* porta: vão de 36×65 em (782, 666) no viewBox */
+.portal {
+  position: absolute;
+  left: calc(50% - 18 * var(--s));
+  top: calc(100% - 234 * var(--s));
+  width: calc(36 * var(--s));
+  height: calc(65 * var(--s));
+  perspective: calc(160 * var(--s));
 }
 
-@keyframes lanterna {
-  50% {
-    opacity: 0.7;
-  }
+.portal-luz {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 58%, #fff8e6 0%, rgba(255, 233, 180, 0) 100%),
+    radial-gradient(ellipse at 50% 60%, #ffe2a8 0%, #ffc070 45%, #f39b45 80%, #d9762f 100%);
+}
+
+.porta-folha {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0% 50%;
+  background:
+    linear-gradient(90deg, transparent 24%, rgba(76, 43, 23, 0.9) 24% 27%, transparent 27% 49%, rgba(76, 43, 23, 0.9) 49% 52%, transparent 52% 74%, rgba(76, 43, 23, 0.9) 74% 77%, transparent 77%),
+    linear-gradient(180deg, #8a5634, #6b4026);
+  box-shadow: inset 0 0 0 calc(2 * var(--s)) #4c2b17;
+}
+
+.porta-guirlanda {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: calc(16 * var(--s));
+  height: calc(16 * var(--s));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: calc(3.6 * var(--s)) solid #127a43;
+}
+
+.porta-guirlanda::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(-5 * var(--s));
+  width: calc(7 * var(--s));
+  height: calc(5 * var(--s));
+  transform: translateX(-50%);
+  border-radius: 40%;
+  background: #c8202f;
+}
+
+.porta-macaneta {
+  position: absolute;
+  right: 12%;
+  top: 54%;
+  width: calc(3.6 * var(--s));
+  height: calc(3.6 * var(--s));
+  border-radius: 50%;
+  background: #f5bd3d;
+}
+
+/* a cena fora de vista para de animar */
+.jornada[data-cena="dentro"] .cena-externa *,
+.jornada[data-cena="fora"] .sala * {
+  animation-play-state: paused !important;
 }
 
 .neve-canvas {
@@ -563,18 +689,9 @@ a {
   line-height: 0.9;
   letter-spacing: -0.05em;
   background: linear-gradient(100deg, #fff 0%, #fff 40%, var(--ouro) 55%, #fff 72%);
-  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 6px 30px rgba(0, 0, 0, 0.6));
-  animation: brilho-titulo 6s ease-in-out infinite;
-}
-
-@keyframes brilho-titulo {
-  50% {
-    background-position: 100% 0;
-  }
 }
 
 .hero-subtitulo {
@@ -608,11 +725,9 @@ a {
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-  background: rgba(8, 14, 28, 0.55);
+  background: rgba(8, 14, 28, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
 }
 
@@ -802,6 +917,7 @@ a {
     radial-gradient(ellipse at 50% 30%, rgba(255, 220, 150, 0.12), transparent 50%),
     radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
   animation: tremeluzir 2.8s ease-in-out infinite;
+  will-change: opacity;
   z-index: 3;
 }
 
@@ -867,7 +983,6 @@ a {
   top: calc(var(--nav) + 9vh);
   width: clamp(120px, 13vw, 210px);
   height: auto;
-  filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.45));
 }
 
 .floco-janela {
@@ -902,8 +1017,15 @@ a {
   right: 3%;
   bottom: 22%;
   width: clamp(200px, 24vw, 370px);
-  height: auto;
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
+  aspect-ratio: 360 / 400;
+}
+
+.lareira svg,
+.arvore svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .chama {
@@ -963,17 +1085,6 @@ a {
   animation: tremeluzir 2s ease-in-out infinite;
 }
 
-.meia {
-  transform-box: fill-box;
-  transform-origin: 50% 0;
-  animation: balancar 4s ease-in-out infinite;
-}
-
-@keyframes balancar {
-  50% {
-    transform: rotate(4deg);
-  }
-}
 
 .mesa {
   position: absolute;
@@ -981,7 +1092,6 @@ a {
   bottom: 17%;
   width: clamp(170px, 19vw, 290px);
   height: auto;
-  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.45));
 }
 
 .vapor {
@@ -1011,16 +1121,21 @@ a {
   left: 50%;
   bottom: 13%;
   height: min(62svh, 600px);
-  width: auto;
   aspect-ratio: 400 / 560;
   transform: translateX(-50%);
-  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.5));
   z-index: 1;
 }
 
-.luz-arvore {
-  filter: drop-shadow(0 0 4px currentColor);
-  animation: luzinha 1.4s ease-in-out infinite;
+.luzes-fase {
+  animation: luzinha 1.5s ease-in-out infinite;
+}
+
+.luzes-fase-1 {
+  animation-delay: -0.5s;
+}
+
+.luzes-fase-2 {
+  animation-delay: -1s;
 }
 
 .estrela-topo {
@@ -1112,13 +1227,19 @@ a {
   position: relative;
   display: block;
   width: 100%;
+  animation: flutuar 3s ease-in-out infinite;
+}
+
+@keyframes flutuar {
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .presente-svg {
   width: 100%;
   height: auto;
   overflow: visible;
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45));
 }
 
 .presente-brilho {
@@ -1158,7 +1279,7 @@ a {
 }
 
 .presente-esgotado .presente-svg {
-  filter: grayscale(0.85) brightness(0.7) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45));
+  filter: grayscale(0.85) brightness(0.7);
 }
 
 .presente-esgotado .presente-etiqueta small {
@@ -1431,9 +1552,7 @@ a {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(3, 5, 8, 0.72);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(3, 5, 8, 0.85);
   perspective: 1200px;
 }
 
@@ -1943,9 +2062,6 @@ a {
     margin-top: 2vh;
   }
 
-  .cena-externa {
-    top: 11vh;
-  }
 
   .contador {
     gap: 4px;
@@ -1990,35 +2106,21 @@ a {
     top: calc(var(--nav) + 3vh);
   }
 
-  /* Muitos presentes: vira uma prateleira com rolagem lateral. */
+  /* Todos os presentes visíveis: grade que cresce com a quantidade. */
   .presentes {
-    bottom: 2.5vh;
+    bottom: 1.5vh;
     max-width: 100vw;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding: 30px 20px 8px;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
-  }
-
-  .presentes::-webkit-scrollbar {
-    display: none;
+    padding: 0 10px;
+    gap: 2px 6px;
   }
 
   .presente {
-    --tamanho: 84px;
-    flex-shrink: 0;
-    scroll-snap-align: center;
+    --tamanho: clamp(62px, min(21vw, 9.5svh), 84px);
   }
 
-  .presente:first-child {
-    margin-left: auto;
-  }
-
-  .presente:last-child {
-    margin-right: auto;
+  .presente-etiqueta {
+    font-size: 10.5px;
+    padding: 2px 6px;
   }
 
   .modal-topo {

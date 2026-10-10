@@ -30,7 +30,8 @@ export function Lareira() {
   }, []);
 
   return (
-    <svg className="lareira" viewBox="0 0 360 400" aria-hidden="true">
+    <div className="lareira" aria-hidden="true">
+    <svg viewBox="0 0 360 400">
       <defs>
         <radialGradient id="lar-boca" cx="0.5" cy="0.85" r="0.8">
           <stop offset="0" stopColor="#ff9a3c" stopOpacity="0.9" />
@@ -64,6 +65,47 @@ export function Lareira() {
       <path d="M86 392 V262 Q86 206 180 206 Q274 206 274 262 V392 Z" fill="#2a1a12" />
       <path d="M96 392 V266 Q96 218 180 218 Q264 218 264 266 V392 Z" fill="url(#lar-boca)" />
 
+      <rect x="0" y="384" width="360" height="16" rx="3" fill="#3f3834" />
+
+      {/* cornija */}
+      <rect x="0" y="70" width="360" height="26" rx="4" fill="url(#lar-cornija)" />
+      <rect x="6" y="94" width="348" height="5" fill="#2b1a10" opacity="0.6" />
+
+      {/* guirlanda sobre a cornija */}
+      <path d="M4 74 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0" fill="none" stroke="#127a43" strokeWidth="9" strokeLinecap="round" />
+      {Array.from({ length: 16 }, (_, i) => (
+        <circle
+          key={i}
+          cx={14 + i * 22}
+          cy={i % 2 ? 87 : 78}
+          r="3"
+          fill={["#ffd36b", "#ff3b4e", "#7dffb2"][i % 3]}
+        />
+      ))}
+
+      {/* meias */}
+      {[52, 308].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x} 96 v6`} stroke="#f5d9a0" strokeWidth="2" />
+          <path
+            d={`M${x - 14} 104 h28 v42 q0 10 10 14 q16 6 12 18 q-4 10 -22 6 l-22 -8 q-8 -4 -6 -14 Z`}
+            fill={CORES_MEIAS[i]}
+          />
+          <rect x={x - 17} y="100" width="34" height="13" rx="5" fill="#f5f1e8" />
+        </g>
+      ))}
+
+      {/* velas na cornija */}
+      {[140, 220].map((x) => (
+        <g key={x}>
+          <rect x={x - 5} y="46" width="10" height="24" rx="2" fill="#f5f1e8" />
+          <circle cx={x} cy="40" r="12" fill="#ffc65c" opacity="0.25" />
+        </g>
+      ))}
+    </svg>
+
+    {/* fogo e chamas das velas: camada própria, a única que se mexe */}
+    <svg className="lareira-fogo" viewBox="0 0 360 400">
       {/* fogo */}
       <g className="fogo">
         <path className="chama chama-ext" d="M120 372 C 110 330 140 320 135 280 C 160 300 158 260 180 236 C 186 270 214 268 212 300 C 232 292 246 330 240 372 Z" fill="url(#lar-chama-ext)" />
@@ -79,46 +121,10 @@ export function Lareira() {
       <rect x="108" y="370" width="140" height="16" rx="8" fill="#6b4026" transform="rotate(7 178 378)" />
       <circle cx="248" cy="364" r="7" fill="#a0704a" stroke="#5a3520" strokeWidth="2" />
 
-      <rect x="0" y="384" width="360" height="16" rx="3" fill="#3f3834" />
-
-      {/* cornija */}
-      <rect x="0" y="70" width="360" height="26" rx="4" fill="url(#lar-cornija)" />
-      <rect x="6" y="94" width="348" height="5" fill="#2b1a10" opacity="0.6" />
-
-      {/* guirlanda sobre a cornija */}
-      <path d="M4 74 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0 q 22 22 44 0" fill="none" stroke="#127a43" strokeWidth="9" strokeLinecap="round" />
-      {Array.from({ length: 16 }, (_, i) => (
-        <circle
-          key={i}
-          cx={14 + i * 22}
-          cy={i % 2 ? 87 : 78}
-          r="3"
-          className="luz-arvore"
-          fill={["#ffd36b", "#ff3b4e", "#7dffb2"][i % 3]}
-          style={{ animationDelay: `${(i % 4) * 0.4}s`, color: ["#ffd36b", "#ff3b4e", "#7dffb2"][i % 3] }}
-        />
-      ))}
-
-      {/* meias */}
-      {[52, 308].map((x, i) => (
-        <g key={x} className="meia" style={{ animationDelay: `${i * 0.8}s` }}>
-          <path d={`M${x} 96 v6`} stroke="#f5d9a0" strokeWidth="2" />
-          <path
-            d={`M${x - 14} 104 h28 v42 q0 10 10 14 q16 6 12 18 q-4 10 -22 6 l-22 -8 q-8 -4 -6 -14 Z`}
-            fill={CORES_MEIAS[i]}
-          />
-          <rect x={x - 17} y="100" width="34" height="13" rx="5" fill="#f5f1e8" />
-        </g>
-      ))}
-
-      {/* velas na cornija */}
       {[140, 220].map((x) => (
-        <g key={x}>
-          <rect x={x - 5} y="46" width="10" height="24" rx="2" fill="#f5f1e8" />
-          <path className="chama-vela" d={`M${x} 32 q6 8 0 14 q-6 -6 0 -14Z`} fill="#ffd36b" />
-          <circle cx={x} cy="40" r="12" fill="#ffc65c" opacity="0.25" />
-        </g>
+        <path key={x} className="chama-vela" d={`M${x} 32 q6 8 0 14 q-6 -6 0 -14Z`} fill="#ffd36b" />
       ))}
     </svg>
+    </div>
   );
 }
