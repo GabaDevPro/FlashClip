@@ -31,7 +31,11 @@ versão sem zoom e sem animações contínuas.
 
 ## Rodando localmente
 
+Precisa do [Node.js](https://nodejs.org/) **22 ou mais novo** (a versão LTS serve).
+
 ```bash
+git clone https://github.com/GabaDevPro/flashclip.git
+cd flashclip
 npm install
 npm run dev       # http://localhost:5173
 npm run build     # gera a pasta dist/
